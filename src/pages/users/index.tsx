@@ -28,8 +28,6 @@ export default function UserList() {
     lg: true,
   });
 
-  console.log(isWideVersion);
-
   return (
     <>
       <Head>
