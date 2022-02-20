@@ -5,6 +5,7 @@ import Head from 'next/head';
 
 import { Header } from '../components/Header';
 import { Sidebar } from '../components/Sidebar';
+import { useHasMounted } from '../services/hook/useHasMounted';
 
 const Chart = dynamic(() => import('react-apexcharts'), {
   ssr: false,
@@ -58,19 +59,21 @@ const options: ApexOptions = {
   },
 };
 
-const series = [{ name: 'seruies', data: [31, 120, 10, 28, 61, 18, 109] }];
+const series = [{ name: 'series', data: [31, 120, 10, 28, 61, 18, 109] }];
 
 export default function Dashboard() {
+  const hasMounted = useHasMounted();
+
   return (
     <>
       <Head>
         <title>Dashboard | Dashgo</title>
       </Head>
       <Flex direction="column" h="100vh">
-        <Header />
+        {hasMounted && <Header />}
 
         <Flex w="100%" mt="6" maxWidth={1480} mx="auto" px="6">
-          <Sidebar />
+          {hasMounted && <Sidebar />}
 
           <SimpleGrid flex="1" gap="4" minChildWidth="320px" align="flex-start">
             <Box p={['6', '8']} bg="gray.800" borderRadius={8} pb="4">

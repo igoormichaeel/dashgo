@@ -20,45 +20,17 @@ import { RiAddLine, RiPencilLine } from 'react-icons/ri';
 
 import Head from 'next/head';
 import Link from 'next/link';
+import { useUsers } from '../../services/hook/useUsers';
+import { useHasMounted } from '../../services/hook/useHasMounted';
 
-import { api } from '../../services/api';
-import { useQuery } from 'react-query';
 import { Header } from '../../components/Header';
-import { Pagination } from '../../components/Pagination';
 import { Sidebar } from '../../components/Sidebar';
-
-type User = {
-  id: string;
-  name: string;
-  email: string;
-  createdAt: string;
-};
+import { Pagination } from '../../components/Pagination';
 
 export default function UserList() {
-  const { data, isLoading, isFetching, error, refetch } = useQuery<User[]>(
-    'users',
-    async () => {
-      const { data } = await api.get('users');
+  const hasMounted = useHasMounted();
 
-      const users = data.users.map((user: User) => {
-        return {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          createdAt: new Date(user.createdAt).toLocaleDateString('pt-br', {
-            day: '2-digit',
-            month: 'long',
-            year: 'numeric',
-          }),
-        };
-      });
-
-      return users;
-    },
-    {
-      staleTime: 1000 * 5, // 5 seconds
-    }
-  );
+  const { data, isLoading, isFetching, error, refetch } = useUsers();
 
   const isWideVersion = useBreakpointValue({
     base: false,
@@ -71,10 +43,10 @@ export default function UserList() {
         <title>Usuários | Dashgo</title>
       </Head>
       <Box>
-        <Header />
+        {hasMounted && <Header />}
 
         <Flex w="100%" my="6" maxWidth={1480} mx="auto" px={['4', '4', '6']}>
-          <Sidebar />
+          {hasMounted && <Sidebar />}
 
           <Box flex="1" borderRadius={8} bg="gray.800" p={['4', '4', '8']}>
             <Flex mb="8" justify="space-between" align="center">
@@ -126,12 +98,14 @@ export default function UserList() {
               <>
                 <Table colorScheme="whiteAlpha">
                   <Thead>
-                    <Th px={['1', '1', '6']} color="gray.300" w="8">
-                      <Checkbox colorScheme="pink" />
-                    </Th>
-                    <Th>Usuário</Th>
-                    {isWideVersion && <Th>Data de cadastro</Th>}
-                    <Th w="8"></Th>
+                    <Tr>
+                      <Th px={['1', '1', '6']} color="gray.300" w="8">
+                        <Checkbox colorScheme="pink" />
+                      </Th>
+                      <Th>Usuário</Th>
+                      {isWideVersion && <Th>Data de cadastro</Th>}
+                      <Th w="8"></Th>
+                    </Tr>
                   </Thead>
 
                   <Tbody>
