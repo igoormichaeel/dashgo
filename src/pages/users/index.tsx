@@ -26,11 +26,13 @@ import { useHasMounted } from '../../services/hook/useHasMounted';
 import { Header } from '../../components/Header';
 import { Sidebar } from '../../components/Sidebar';
 import { Pagination } from '../../components/Pagination';
+import { useState } from 'react';
 
 export default function UserList() {
   const hasMounted = useHasMounted();
 
-  const { data, isLoading, isFetching, error, refetch } = useUsers();
+  const [page, setPage] = useState(1);
+  const { data, isLoading, isFetching, error, refetch } = useUsers(page);
 
   const isWideVersion = useBreakpointValue({
     base: false,
@@ -109,7 +111,7 @@ export default function UserList() {
                   </Thead>
 
                   <Tbody>
-                    {data?.map((user) => (
+                    {data.users.map((user) => (
                       <Tr key={user.id}>
                         <Td px={['1', '1', '6']}>
                           <Checkbox colorScheme="pink" />
@@ -140,7 +142,11 @@ export default function UserList() {
                   </Tbody>
                 </Table>
 
-                <Pagination />
+                <Pagination
+                  totalCountOfRegisters={data.totalCount}
+                  currentPage={page}
+                  onPageChange={setPage}
+                />
               </>
             )}
           </Box>
