@@ -36,10 +36,6 @@ export function Pagination({
       ? generatePageArrayBetween(currentPage, currentPage + siblingsCount + 1)
       : [];
 
-  console.log('lastPage', lastPage);
-  console.log('previousPages', previousPages);
-  console.log('nextPages', nextPages);
-
   return (
     <Stack
       direction={['column', 'column', 'row']}
