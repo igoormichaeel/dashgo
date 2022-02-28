@@ -35,7 +35,7 @@ export function makeServer() {
       }),
     },
     seeds(server) {
-      server.createList('user', 100);
+      server.createList('user', 50);
     },
     routes() {
       this.namespace = 'api';
@@ -49,16 +49,19 @@ export function makeServer() {
         const pageStart = (Number(page) - 1) * Number(per_page);
         const pageEnd = pageStart + Number(per_page);
 
-        const users = this.serialize(schema.all('user')).users.slice(
-          pageStart,
-          pageEnd
-        );
-
+        const users = this.serialize(schema.all('user'))
+          .users.sort((a, b) => {
+            if (new Date(a.created_at) < new Date(b.created_at)) return -1;
+            else if (new Date(a.created_at) > new Date(b.created_at)) return 1;
+            else return 0;
+          })
+          .slice(pageStart, pageEnd);
         return new Response(200, { 'x-total-count': String(total) }, { users });
       });
 
       this.get('/users/:id');
       this.post('/users');
+      this.put('/users/:id');
 
       this.namespace = '';
       this.passthrough();

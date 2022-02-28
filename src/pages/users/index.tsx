@@ -15,22 +15,29 @@ import {
   Thead,
   Tr,
   useBreakpointValue,
+  useDisclosure,
 } from '@chakra-ui/react';
 import { AiOutlineReload } from 'react-icons/ai';
 import { RiAddLine, RiPencilLine } from 'react-icons/ri';
 
 import Head from 'next/head';
 import NextLink from 'next/link';
-import { getUsers, useUsers } from '../../services/hook/useUsers';
-import { useHasMounted } from '../../services/hook/useHasMounted';
+import { useState } from 'react';
+import { GetServerSideProps } from 'next';
+import { useUsers } from '../../services/hook/useUsers';
 
+import EditUser from './edit';
+import { api } from '../../services/api';
 import { Header } from '../../components/Header';
 import { Sidebar } from '../../components/Sidebar';
-import { Pagination } from '../../components/Pagination';
-import { useState } from 'react';
 import { queryClient } from '../../services/queryClient';
-import { api } from '../../services/api';
-import { GetServerSideProps } from 'next';
+import { Pagination } from '../../components/Pagination';
+import { useHasMounted } from '../../services/hook/useHasMounted';
+import { UserFormData } from '../../types';
+
+type UserQueryData = {
+  user: UserFormData;
+};
 
 export default function UserList({ users, totalCount }) {
   const hasMounted = useHasMounted();
@@ -38,6 +45,12 @@ export default function UserList({ users, totalCount }) {
   const [page, setPage] = useState(1);
 
   const { data, isLoading, isFetching, error, refetch } = useUsers(page);
+
+  const [userEdit, setUserEdit] = useState<UserFormData>();
+
+  const [userId, setUserId] = useState('');
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const isWideVersion = useBreakpointValue({
     base: false,
@@ -56,6 +69,11 @@ export default function UserList({ users, totalCount }) {
         staleTime: 1000 * 60 * 10, // 10 minutes
       }
     );
+
+    const data = queryClient.getQueryData<UserQueryData>(['users', userId]);
+
+    setUserEdit(data.user);
+    setUserId(userId);
   }
 
   return (
@@ -80,7 +98,6 @@ export default function UserList({ users, totalCount }) {
 
               <Flex>
                 <Button
-                  as="a"
                   size="sm"
                   fontSize="sm"
                   mr="4"
@@ -137,10 +154,7 @@ export default function UserList({ users, totalCount }) {
                         </Td>
                         <Td>
                           <Box>
-                            <Link
-                              color="purple.400"
-                              onMouseEnter={() => handlePrefetchUser(user.id)}
-                            >
+                            <Link color="purple.400">
                               <Text fontWeight="bold">{user.name}</Text>
                             </Link>
                             <Text fontSize="sm" color="gray.300">
@@ -151,12 +165,13 @@ export default function UserList({ users, totalCount }) {
                         {isWideVersion && <Td>{user.createdAt}</Td>}
                         <Td>
                           <Button
-                            as="a"
                             size="sm"
                             fontSize="sm"
                             colorScheme="purple"
                             _hover={{ cursor: 'pointer' }}
                             leftIcon={<Icon as={RiPencilLine} fontSize="16" />}
+                            onClick={onOpen}
+                            onMouseEnter={() => handlePrefetchUser(user.id)}
                           >
                             {isWideVersion && 'Editar'}
                           </Button>
@@ -165,6 +180,13 @@ export default function UserList({ users, totalCount }) {
                     ))}
                   </Tbody>
                 </Table>
+
+                <EditUser
+                  user={userEdit}
+                  userId={userId}
+                  isOpen={isOpen}
+                  onClose={onClose}
+                />
 
                 <Pagination
                   totalCountOfRegisters={data.totalCount}

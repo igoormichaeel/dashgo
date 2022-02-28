@@ -21,7 +21,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         </SideBarDrawerProvider>
       </ChakraProvider>
 
-      <ReactQueryDevtools />
+      {/* <ReactQueryDevtools /> */}
     </QueryClientProvider>
   );
 }

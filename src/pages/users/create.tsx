@@ -21,13 +21,7 @@ import { Header } from '../../components/Header';
 import { Sidebar } from '../../components/Sidebar';
 import { Input } from '../../components/Form/Input';
 import { queryClient } from '../../services/queryClient';
-
-type CreateUserFormData = {
-  name?: string;
-  email?: string;
-  password?: string;
-  password_confirmation?: string;
-};
+import { UserFormData } from '../../types';
 
 const createUserFormSchema = yup.object().shape({
   name: yup.string().required('Nome obrigatório'),
@@ -45,7 +39,7 @@ export default function CreateUser() {
   const router = useRouter();
 
   const createUser = useMutation(
-    async (user: CreateUserFormData) => {
+    async (user: UserFormData) => {
       const response = await api.post('users', {
         user: {
           ...user,
@@ -58,7 +52,6 @@ export default function CreateUser() {
     {
       onSuccess: () => {
         queryClient.invalidateQueries('users');
-        console.log(queryClient.getQueryData(['users', '1']));
 
         router.push('/users');
       },
@@ -71,7 +64,7 @@ export default function CreateUser() {
 
   const { errors } = formState;
 
-  const handleCreateUser: SubmitHandler<CreateUserFormData> = async (data) => {
+  const handleCreateUser: SubmitHandler<UserFormData> = async (data) => {
     await createUser.mutateAsync(data);
   };
 
