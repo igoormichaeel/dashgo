@@ -19,6 +19,8 @@ Finally, React Query was used for data fetching and data caching.
 - [MirageJS](https://miragejs.com/) to mock out an API
 - [Faker](https://www.npmjs.com/package/@withshepherd/faker) to generate fake (but realistic) data
 - [React Query](https://react-query.tanstack.com/) for data fetching and data caching
+- [React Hook Form](https://react-hook-form.com/) for forms
+- [Yup](https://github.com/jquense/yup) for form validation
 
 ## Demonstration
 
